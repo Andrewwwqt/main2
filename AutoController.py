@@ -22,7 +22,8 @@ class AutoThread(QThread):
 
 
         if RobotController.robot.manualJointMode():
-            RobotController.robot.moveToInitialPose()
+            if RobotController.robot.moveToInitialPose():
+                RobotController.robot.manualJointMode()
 
         RobotController.robot.addWait(5)
 
@@ -30,14 +31,12 @@ class AutoThread(QThread):
         self.tasks_copy = list(AutoController.All_tasks)
 
         self.PICK_POSITION = []
-        self.PICK_POSITION.append(Waypoint([radians(-10), radians(0), radians(90), radians(0), radians(90), radians(0)]))
+        self.PICK_POSITION.append(Waypoint([radians(-17), radians(32), radians(71), radians(-13), radians(90), radians(17)]))
         
-
-        self.PICK_POSITION.append(Waypoint([radians(-10), radians(0), radians(90), radians(0), radians(90), radians(0)]))
 
 
         self.CONTAINER_1_POSITIONS = []
-        self.CONTAINER_1_POSITIONS.append(Waypoint([radians(0), radians(0), radians(90), radians(10), radians(90), radians(0)]))
+        self.CONTAINER_1_POSITIONS.append(Waypoint([radians(20), radians(16), radians(103), radians(-30), radians(90), radians(-20)]))
         
         
         self.CONTAINER_2_POSITIONS = []
@@ -57,7 +56,26 @@ class AutoThread(QThread):
     def run(self):
         try:
             for task in self.tasks_copy:
-                if not self.running:
+                RobotController.robot.addMoveToPointJ(self.PICK_POSITION,0.05, 0.1)
+                if RobotController.robot.play():
+                    print("1")
+                    if RobotController.robot.manualJointMode():
+                        print("mode")
+                        if RobotController.robot.moveToInitialPose():
+                            print("pose")
+                            if RobotController.robot.manualJointMode():
+                                print("mode")
+                                RobotController.robot.addMoveToPointJ(self.CONTAINER_1_POSITIONS,0.05, 0.1)
+                                if RobotController.robot.play():
+                                    print("2")
+                                    if RobotController.robot.manualJointMode():
+                                        print("mode")
+                                        if RobotController.robot.moveToInitialPose():
+                                            print("pose")
+                                            RobotController.robot.manualJointMode()
+                                            print("Успех!")
+
+            """ if not self.running:
                     break
                 if AutoController.tara1 == 4 or AutoController.tara2 == 4 or AutoController.tara3 == 4:
                     self.status_message.emit( "Ошибка в автоматическом режиме: одна из тар заполнена!")
@@ -113,7 +131,7 @@ class AutoThread(QThread):
                     position_index = AutoController.tara3
 
                 self.status_message.emit(f"Перемещение к таре {container_num} позиция {position_index + 1}")
-                
+
                 waypoint_container = self.CONTAINER_1_POSITIONS[position_index]
                 RobotController.robot.addMoveToPointJ(waypoint_container,0.05, 0.1)
                 if RobotController.robot.play():
@@ -134,7 +152,7 @@ class AutoThread(QThread):
                 
                 
                 self.secSignal.emit(container_num)
-                self.updateTask.emit()
+                self.updateTask.emit()"""
 
             
 
