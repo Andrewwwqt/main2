@@ -40,7 +40,6 @@ class RobotController:
     def MoveToStart():
         if RobotController.robot.connect():
            RobotController.robot.moveToInitialPose()
-        time.sleep(5)
         if RobotMode.RobotMode == RobotModes.CART:
                 RobotController.robot.manualCartMode()
         if RobotMode.RobotMode == RobotModes.JOINT:

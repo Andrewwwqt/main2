@@ -21,8 +21,9 @@ import torch
 
 class VideoThread(QThread):
     ImageUpdate = pyqtSignal(QImage)
+    Objects = pyqtSignal(list)
     
-    def __init__(self, model_path='best.pt'):
+    def __init__(self, model_path='best.pt',  objects = None):
         super().__init__()
         self.threadActive = True
         self.model_path = model_path
@@ -30,6 +31,8 @@ class VideoThread(QThread):
         self.confidence = 0.5
         self.device = 'cpu'
         self.detect = False
+        self.objectsfilt = objects
+        print(self.objectsfilt)
         
     def load_model(self):
         try:
@@ -54,20 +57,31 @@ class VideoThread(QThread):
                 boxes = results.boxes.xyxy.cpu().numpy()
                 confs = results.boxes.conf.cpu().numpy()
                 cls_ids = results.boxes.cls.cpu().numpy()
-                
+
+                names = []
+
                 for i, (box, conf, cls_id) in enumerate(zip(boxes, confs, cls_ids)):
                     x1, y1, x2, y2 = map(int, box)
                     cls_name = results.names[int(cls_id)]
 
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    if len(self.objectsfilt) == 0:
+                        names.append(cls_name)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        label = f'{cls_name} {conf:.2f}'
+                        (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), (0, 255, 0), -1)
+                        cv2.putText(frame, label, (x1, y1-5), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+                    elif cls_name in self.objectsfilt:
+                        names.append(cls_name)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        label = f'{cls_name} {conf:.2f}'
+                        (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), (0, 255, 0), -1)
+                        cv2.putText(frame, label, (x1, y1-5), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
 
-                    label = f'{cls_name} {conf:.2f}'
-                    (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-
-                    cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), (0, 255, 0), -1)
-
-                    cv2.putText(frame, label, (x1, y1-5), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+                self.Objects.emit(names)
                     
                     
         except:
@@ -124,6 +138,8 @@ class MainController(QMainWindow):
         uic.loadUi("main.ui", self)
         self.videoThread = None
         self.model_path = 'best.pt'
+        self.objects = []
+        self.log_list = []
 
         Statistic(self)
         LightController(self)
@@ -150,6 +166,7 @@ class MainController(QMainWindow):
         self.buttons()
 
     def buttons(self):
+        #self.Purple.clicked.connect(self.)
         self.turnCAM.clicked.connect(self.StartVideoPlay)
         self.turnoffCAM.clicked.connect(self.StopVideo)
         self.tumbCam.clicked.connect(self.TurnVision)
@@ -163,12 +180,33 @@ class MainController(QMainWindow):
         self.SaveLogs.clicked.connect(self.savelogs)
         self.pushobject.clicked.connect(self.ToolON)
         self.SaveLogs_2.clicked.connect(self.SaveStat)
+        self.Purple.clicked.connect(lambda checkd = False, obj = "purple": self.ObjectDetect(obj))
+        self.Green.clicked.connect(lambda checkd = False, obj = "green": self.ObjectDetect(obj))
+        self.Orange.clicked.connect(lambda checkd = False, obj = "orange": self.ObjectDetect(obj))
+        self.RedL.clicked.connect(lambda checkd = False, obj = "redL": self.ObjectDetect(obj))
+        self.RedO.clicked.connect(lambda checkd = False, obj = "redO": self.ObjectDetect(obj))
+        self.Yellow.clicked.connect(lambda checkd = False, obj = "Yellow": self.ObjectDetect(obj))
+
+    def ObjectDetect(self,object):
+        if object in self.objects:
+            pos = self.objects.index(object)
+            self.objects.pop(pos)
+        else:
+            self.objects.append(object)
+
+        if len(self.objects) == 0:
+            self.filt.setText("Показывать все")
+        else:
+            self.filt.setText(str(self.objects))
+
+        
 
     def StartVideoPlay(self):
         if Cam.Cam == CamStats.Off:
             Cam.Cam = CamStats.On
-            self.videoThread = VideoThread(self.model_path)
+            self.videoThread = VideoThread(self.model_path, self.objects)
             self.videoThread.ImageUpdate.connect(self.imageUpdate)
+            self.videoThread.Objects.connect(self.UiUpdate)
             self.videoThread.start()
 
     def TurnVision(self):
@@ -181,12 +219,30 @@ class MainController(QMainWindow):
     def StopVideo(self):
         if Cam.Cam == CamStats.On:
             Cam.Cam = CamStats.Off
+            if self.videoThread.detect == True:
+                self.tumbCam.setText("Включить \n определение")
             self.videoThread.stop()
             self.videoThread = None
-
+        
     def imageUpdate(self, image):
             self.video.setPixmap(QPixmap.fromImage(image))
-        
+
+    def UiUpdate(self, list):
+            listlen = len(list)
+            self.countObjects.setText(str(listlen))
+            self.objectss.setText(str(list))
+
+            for item in list:
+                if item not in self.log_list:
+                    self.log_list.append(item)
+                    LogController.Log(LogType.INFO, LogOption.Сamlog, f"Объект {item} появился")
+
+            for item in self.log_list:
+                if item not in list:
+                    pos = self.log_list.index(item)
+                    LogController.Log(LogType.INFO, LogOption.Сamlog, f"Объект {item} пропал")
+                    self.log_list.pop(pos)
+
 
     def SaveStat(self):
         Statistic.SaveStat()
@@ -207,8 +263,8 @@ class MainController(QMainWindow):
         LogController.SaveLogs()
 
     def MobeToStart(self):
-        RobotController.MoveToStart()
-        LogController.Log(LogType.INFO, LogOption.Move, "Вернулся на старт")
+        if RobotController.MoveToStart():
+            LogController.Log(LogType.INFO, LogOption.Move, "Вернулся на старт")
 
     def ChangeRobotMode(self):
         if RobotMode.RobotMode == RobotModes.CART:

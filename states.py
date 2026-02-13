@@ -21,6 +21,7 @@ class LogOption(Enum):
     Move = 3,
     Emetgency = 4,
     Pause = 5,
+    Сamlog = 6,
 
 class LogType(Enum):
     INFO = 1

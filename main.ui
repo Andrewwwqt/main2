@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1413</width>
+    <width>1768</width>
     <height>1075</height>
    </rect>
   </property>
@@ -111,7 +111,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>350</y>
+      <y>340</y>
       <width>641</width>
       <height>411</height>
      </rect>
@@ -984,7 +984,7 @@
      <rect>
       <x>700</x>
       <y>970</y>
-      <width>191</width>
+      <width>201</width>
       <height>31</height>
      </rect>
     </property>
@@ -1362,9 +1362,9 @@
     <property name="geometry">
      <rect>
       <x>900</x>
-      <y>360</y>
-      <width>491</width>
-      <height>441</height>
+      <y>340</y>
+      <width>331</width>
+      <height>381</height>
      </rect>
     </property>
     <property name="text">
@@ -1375,7 +1375,7 @@
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>360</y>
+      <y>340</y>
       <width>131</width>
       <height>71</height>
      </rect>
@@ -1388,7 +1388,7 @@
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>430</y>
+      <y>410</y>
       <width>131</width>
       <height>71</height>
      </rect>
@@ -1401,7 +1401,7 @@
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>500</y>
+      <y>480</y>
       <width>131</width>
       <height>51</height>
      </rect>
@@ -1411,13 +1411,219 @@
  определение </string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_25">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>790</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Объекты в кадре:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="objectss">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>790</y>
+      <width>521</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_26">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>750</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Число объектов:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="countObjects">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>750</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_27">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>340</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Распозновать только:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Purple">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>360</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Purple</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Orange">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>410</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Orange</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Yellow">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>460</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Yellow</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Green">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>510</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Green</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="RedO">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>560</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RedO</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="RedL">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>610</y>
+      <width>121</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RedL</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_28">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>770</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Текущий фильтр:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="filt">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>770</y>
+      <width>401</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Показывать все</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_29">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>660</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Нажмите что бы 
+добавить или удалить</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="camlog">
+    <property name="geometry">
+     <rect>
+      <x>1400</x>
+      <y>360</y>
+      <width>331</width>
+      <height>541</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_30">
+    <property name="geometry">
+     <rect>
+      <x>1400</x>
+      <y>340</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Лог камеры</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1413</width>
+     <width>1768</width>
      <height>21</height>
     </rect>
    </property>

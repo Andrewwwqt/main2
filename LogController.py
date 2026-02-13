@@ -26,6 +26,9 @@ class LogController:
                 LogController.UI.plainTextEdit_2.appendPlainText(out_message)
             case LogOption.Move:
                 LogController.UI.plainTextEdit_3.appendPlainText(out_message)
+            case LogOption.Сamlog:
+                LogController.UI.camlog.appendPlainText(out_message)
+
 
         path = (AppCFG.PATH["DEFAULT_LOG_PATH"] + "systemlogs.txt")
         with open(path, 'a') as file:
