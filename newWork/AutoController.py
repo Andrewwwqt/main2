@@ -1,0 +1,282 @@
+from statistic import Statistic
+from PyQt5.QtCore import QThread, pyqtSignal
+from RobotController import RobotController
+from ApplictationState import ApplicationState, ModeApplication
+from states import AppStates, AppMods, LogOption, LogType
+from lightController import LightController
+from LogController import LogController
+from statistic import Statistic
+from motion.core import Waypoint
+import time 
+from math import *
+
+
+
+class AutoThread(QThread):
+    status_message = pyqtSignal(str)
+    secSignal = pyqtSignal(int)
+    updateTask = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+
+        if RobotController.robot.manualJointMode():
+            if RobotController.robot.moveToInitialPose():
+                RobotController.robot.manualJointMode()
+
+        RobotController.robot.addWait(5)
+
+        self.running = True
+        self.tasks_copy = list(AutoController.All_tasks)
+
+        self.PICK_POSITION = []
+        self.PICK_POSITION.append(Waypoint([radians(-17), radians(32), radians(71), radians(-13), radians(90), radians(17)]))
+        
+
+
+        self.CONTAINER_1_POSITIONS = []
+        self.CONTAINER_1_POSITIONS.append(Waypoint([radians(20), radians(16), radians(103), radians(-30), radians(90), radians(-20)]))
+        
+        
+        self.CONTAINER_2_POSITIONS = []
+        self.CONTAINER_2_POSITIONS.append(Waypoint([radians(0), radians(0), radians(90), radians(0), radians(90), radians(0)]))
+        
+        
+        self.CONTAINER_3_POSITIONS = []
+        self.CONTAINER_2_POSITIONS.append(Waypoint([radians(0), radians(0), radians(90), radians(0), radians(90), radians(0)]))
+
+
+        self.brack_POSITION = []
+
+        self.HOME_POSITION = []
+        self.HOME_POSITION.append(Waypoint([radians(0), radians(0), radians(90), radians(0), radians(90), radians(0)]))
+
+
+    def run(self):
+        try:
+            for task in self.tasks_copy:
+                RobotController.robot.addMoveToPointJ(self.PICK_POSITION,0.05, 0.1)
+                if RobotController.robot.play():
+                    print("1")
+                    if RobotController.robot.manualJointMode():
+                        print("mode")
+                        if RobotController.robot.moveToInitialPose():
+                            print("pose")
+                            if RobotController.robot.manualJointMode():
+                                print("mode")
+                                RobotController.robot.addMoveToPointJ(self.CONTAINER_1_POSITIONS,0.05, 0.1)
+                                if RobotController.robot.play():
+                                    print("2")
+                                    if RobotController.robot.manualJointMode():
+                                        print("mode")
+                                        if RobotController.robot.moveToInitialPose():
+                                            print("pose")
+                                            RobotController.robot.manualJointMode()
+                                            print("Успех!")
+
+            """ if not self.running:
+                    break
+                if AutoController.tara1 == 4 or AutoController.tara2 == 4 or AutoController.tara3 == 4:
+                    self.status_message.emit( "Ошибка в автоматическом режиме: одна из тар заполнена!")
+                    self.updateTask.emit()
+                    break
+                
+                 
+                self.status_message.emit(f"Выполнение задачи: {task}")
+
+                self.status_message.emit("Перемещение к месту захвата")
+                waypoint_pick = self.PICK_POSITION
+                RobotController.robot.addMoveToPointJ(waypoint_pick,0.05, 0.1)
+                if RobotController.robot.play():
+                    if RobotController.robot.manualJointMode():
+                        RobotController.robot.moveToInitialPose()
+                time.sleep(2) 
+
+
+                self.status_message.emit("Захват объекта")
+                RobotController.robot.toolON()
+                time.sleep(1)
+
+
+                if task.startswith("1"):
+                        container_positions = self.CONTAINER_1_POSITIONS
+                        container_num = 1
+                elif task.startswith("2"):
+                        container_positions = self.CONTAINER_2_POSITIONS
+                        container_num = 2
+                elif task.startswith("3"):
+                        container_positions = self.CONTAINER_3_POSITIONS
+                        container_num = 3
+                else:  
+                    self.status_message.emit("Перемещение в зону брака")
+                    waypoint_reject = self.brack_POSITION
+                    RobotController.robot.addMoveToPointJ(waypoint_reject,0.05, 0.1)
+                    if RobotController.robot.play():
+                        time.sleep(2)
+                    time.sleep(1)
+
+                    RobotController.robot.toolOFF()
+                    time.sleep(0.5)
+                    self.secSignal.emit(4)
+                    self.updateTask.emit()
+                    AutoController.All_tasks.pop(0)
+                    continue
+
+                if container_num == 1:
+                    position_index = AutoController.tara1
+                elif container_num == 2:
+                    position_index = AutoController.tara2
+                elif container_num == 3:
+                    position_index = AutoController.tara3
+
+                self.status_message.emit(f"Перемещение к таре {container_num} позиция {position_index + 1}")
+
+                waypoint_container = self.CONTAINER_1_POSITIONS[position_index]
+                RobotController.robot.addMoveToPointJ(waypoint_container,0.05, 0.1)
+                if RobotController.robot.play():
+                    if RobotController.robot.manualJointMode():
+                        RobotController.robot.moveToInitialPose()
+                time.sleep(1)
+                    
+                
+                self.status_message.emit("Освобождение объекта")
+                RobotController.robot.toolOFF()
+                time.sleep(0.5)
+                    
+                self.status_message.emit("Возврат в исходную позицию")
+                if RobotController.robot.manualJointMode():
+                    RobotController.robot.moveToInitialPose()
+                AutoController.All_tasks.pop(0)
+
+                
+                
+                self.secSignal.emit(container_num)
+                self.updateTask.emit()"""
+
+            
+
+
+        except:
+            self.status_message.emit( "Ошибка в автоматическом режиме")
+            RobotController.robot.stop()
+            RobotController.robot.toolOFF()
+            self.updateTask.emit()
+        
+        finally:
+            ApplicationState.ApplicationState = AppStates.wait
+            LightController.update()
+            self.updateTask.emit()
+
+    def stop(self):
+        try:
+            self.running = False
+            RobotController.robot.stop()
+            RobotController.robot.toolOFF()
+            self.status_message.emit( "Экстренная Остановка!")
+        except:
+            pass
+
+
+class AutoController:
+    tara1 = 0
+    tara2 = 0
+    tara3 = 0
+    All_tasks = []
+    UI = None
+
+    def __init__(self, ui):
+        AutoController.UI = ui
+        self.thread = None
+        self.buttons()
+
+    def buttons(self):
+        AutoController.UI.add_one.clicked.connect(lambda checked=False, name="1_Категория": self.AddElement(name))
+        AutoController.UI.add_two.clicked.connect(lambda checked=False, name="2_Категория": self.AddElement(name))
+        AutoController.UI.add_tree.clicked.connect(lambda checked=False, name="3_Категория": self.AddElement(name))
+        AutoController.UI.add_brack.clicked.connect(lambda checked=False, name="Брак": self.AddElement(name))
+        AutoController.UI.deleteElement.clicked.connect(self.deletElement)
+        AutoController.UI.clearElements.clicked.connect(self.ClearElements)
+        AutoController.UI.ClearTars_1.clicked.connect(lambda checked=False, number=1: self.ClearTars(number))
+        AutoController.UI.ClearTars_2.clicked.connect(lambda checked=False, number=2: self.ClearTars(number))
+        AutoController.UI.ClearTars_3.clicked.connect(lambda checked=False, number=3: self.ClearTars(number))
+        AutoController.UI.StartAutoSort.clicked.connect(self.start)
+        AutoController.UI.ButtonEmergency.clicked.connect(self.stop)
+
+    @staticmethod
+    def AddElement(element: str):
+        AutoController.All_tasks.append(element)
+        AutoController.UpdateTasks()
+
+    @staticmethod
+    def deletElement():
+        if len(AutoController.All_tasks) > 0:
+            AutoController.All_tasks.pop()
+            AutoController.UpdateTasks()
+
+    @staticmethod
+    def ClearElements():
+        AutoController.All_tasks.clear()
+        AutoController.UpdateTasks()
+
+    @staticmethod
+    def ClearTars(tar: int):
+        if tar == 1:
+            AutoController.tara1 = 0
+            AutoController.UI.stat_one.setText("Свободна")
+        elif tar == 2:
+            AutoController.tara2 = 0
+            AutoController.UI.stat_two.setText("Свободна")
+        elif tar == 3:
+            AutoController.tara3 = 0
+            AutoController.UI.stat_three.setText("Свободна")
+
+    @staticmethod
+    def UpdateTasks():
+
+        if AutoController.tara1 == 4:
+            AutoController.UI.stat_one.setText("Занята")
+        if AutoController.tara2 == 4:
+            AutoController.UI.stat_two.setText("Занята")
+        if AutoController.tara3 == 4:
+            AutoController.UI.stat_three.setText("Занята")
+        AutoController.UI.plainTextEdit_6.clear()
+        for i, element in enumerate(AutoController.All_tasks):
+            AutoController.UI.plainTextEdit_6.appendPlainText(f"{i+1}. {element}")
+
+    def start(self):
+        if ApplicationState.ApplicationState == AppStates.wait and ModeApplication.ModeApplication == AppMods.Auto:
+            ApplicationState.ApplicationState = AppStates.On
+            LightController.update()
+            LogController.Log(LogType.INFO, LogOption.Move, "Начало автоматического распределения")
+            self.thread = AutoThread()
+            self.thread.secSignal.connect(self.UpdateUI)
+            self.thread.updateTask.connect(self.UpdateTasks)
+            self.thread.status_message.connect(self.log)
+            self.thread.start()
+
+    def stop(self):
+        self.thread.stop()
+
+    @staticmethod
+    def log(message):
+        LogController.Log(LogType.INFO, LogOption.Move, message)
+
+
+    @staticmethod
+    def UpdateUI(numer):
+        if numer == 1:
+            AutoController.tara1 +=1
+            Statistic.sec1 += 1
+            Statistic.Update()
+        elif numer == 2:
+            AutoController.tara2 +=1
+            Statistic.sec2 += 1
+            Statistic.Update()
+        elif numer == 3:
+            AutoController.tara3 +=1
+            Statistic.sec3 += 1
+            Statistic.Update()
+        elif numer == 4:
+            Statistic.brack += 1
+            Statistic.Update()
