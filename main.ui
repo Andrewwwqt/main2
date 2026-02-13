@@ -23,6 +23,9 @@
       <height>80</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
      <string>Включить</string>
     </property>
@@ -826,6 +829,20 @@
        <string>Новая ячейка </string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>280</y>
+        <width>141</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Полностью 
+ автоматический режим</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">
@@ -946,7 +963,7 @@
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>600</x>
       <y>940</y>
       <width>351</width>
       <height>31</height>
@@ -956,7 +973,7 @@
    <widget class="QLabel" name="label_17">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>600</x>
       <y>920</y>
       <width>201</width>
       <height>16</height>
@@ -969,7 +986,7 @@
    <widget class="QPushButton" name="SaveLogs">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>600</x>
       <y>970</y>
       <width>81</width>
       <height>31</height>
@@ -1577,7 +1594,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Показывать все</string>
+     <string>Распозновать все</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_29">
@@ -1599,8 +1616,8 @@
      <rect>
       <x>1400</x>
       <y>360</y>
-      <width>331</width>
-      <height>541</height>
+      <width>351</width>
+      <height>551</height>
      </rect>
     </property>
    </widget>

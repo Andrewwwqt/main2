@@ -16,7 +16,8 @@ from PyQt5.QtWidgets import *
 import numpy as np
 import os
 from ultralytics import YOLO
-import torch
+import random
+
 
 
 class VideoThread(QThread):
@@ -64,20 +65,34 @@ class VideoThread(QThread):
                     x1, y1, x2, y2 = map(int, box)
                     cls_name = results.names[int(cls_id)]
 
+                    color = (0, 0, 0)
+                    if cls_name == "purple":
+                        color = (128,0,128)
+                    if cls_name == "green":
+                        color = (0,255,0) 
+                    if cls_name == "orange":
+                        color = (255,165,0)
+                    if cls_name == "redL":
+                        color = (255,0,0)
+                    if cls_name == "redO":
+                        color = (255,69,0)
+                    if cls_name == "Yellow":
+                        color = (255,255,0)
+
                     if len(self.objectsfilt) == 0:
                         names.append(cls_name)
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                         label = f'{cls_name} {conf:.2f}'
                         (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), (0, 255, 0), -1)
+                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), color, -1)
                         cv2.putText(frame, label, (x1, y1-5), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
                     elif cls_name in self.objectsfilt:
                         names.append(cls_name)
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                         label = f'{cls_name} {conf:.2f}'
                         (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), (0, 255, 0), -1)
+                        cv2.rectangle(frame, (x1, y1-h-5), (x1+w, y1), color, -1)
                         cv2.putText(frame, label, (x1, y1-5), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
 
@@ -93,8 +108,9 @@ class VideoThread(QThread):
         if not self.load_model():
             pass
 
+        video_path2 = "11129981176336.mp4"
         video_path = "11129981897232.mp4"     
-        cap = cv2.VideoCapture(video_path)
+        cap = cv2.VideoCapture(video_path2)
         
         if not cap.isOpened():
             return
@@ -273,13 +289,14 @@ class MainController(QMainWindow):
             self.frame.setVisible(True)
             self.frame_3.setVisible(False)
             RobotMode.RobotMode = RobotModes.JOINT
+            RobotController.robot.manualJointMode()
         else:
             self.changemode.setText("Move L")
             LogController.Log(LogType.INFO, LogOption.Move, "Режим изменен на CARTESIAN MODE")
             self.frame.setVisible(False)
             self.frame_3.setVisible(True)
             RobotMode.RobotMode = RobotModes.CART
-        RobotController.ChangeRobotMode()
+            RobotController.robot.manualCartMode()
 
     def Emergency(self):
         if ApplicationState.ApplicationState != AppStates.Emergency:

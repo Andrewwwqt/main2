@@ -27,23 +27,14 @@ class RobotController:
         else:
             RobotController.robot.setJointVelocity(command)
 
-    @staticmethod
-    def ChangeRobotMode():
-        if RobotMode.RobotMode == RobotModes.CART:
-            RobotController.robot.manualJointMode()
-            RobotMode.RobotMode = RobotModes.JOINT
-        else:
-            RobotController.robot.manualCartMode()
-            RobotMode.RobotMode = RobotModes.CART
 
     @staticmethod
     def MoveToStart():
-        if RobotController.robot.connect():
-           RobotController.robot.moveToInitialPose()
-        if RobotMode.RobotMode == RobotModes.CART:
-                RobotController.robot.manualCartMode()
-        if RobotMode.RobotMode == RobotModes.JOINT:
-            RobotController.robot.manualJointMode()
+        if RobotController.robot.moveToInitialPose():
+            if RobotMode.RobotMode == RobotModes.CART:
+                    RobotController.robot.manualCartMode()
+            if RobotMode.RobotMode == RobotModes.JOINT:
+                RobotController.robot.manualJointMode()
         LightController.Wait()
         
   
