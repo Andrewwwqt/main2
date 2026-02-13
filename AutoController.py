@@ -20,15 +20,24 @@ class AutoThread(QThread):
     def __init__(self):
         super().__init__()
 
+
+        if RobotController.robot.manualJointMode():
+            RobotController.robot.moveToInitialPose()
+
+        RobotController.robot.addWait(5)
+
         self.running = True
         self.tasks_copy = list(AutoController.All_tasks)
 
         self.PICK_POSITION = []
         self.PICK_POSITION.append(Waypoint([radians(-10), radians(0), radians(90), radians(0), radians(90), radians(0)]))
+        
+
+        self.PICK_POSITION.append(Waypoint([radians(-10), radians(0), radians(90), radians(0), radians(90), radians(0)]))
 
 
         self.CONTAINER_1_POSITIONS = []
-        self.CONTAINER_1_POSITIONS.append(Waypoint([radians(10), radians(0), radians(90), radians(10), radians(90), radians(0)]))
+        self.CONTAINER_1_POSITIONS.append(Waypoint([radians(0), radians(0), radians(90), radians(10), radians(90), radians(0)]))
         
         
         self.CONTAINER_2_POSITIONS = []
@@ -60,23 +69,17 @@ class AutoThread(QThread):
 
                 self.status_message.emit("Перемещение к месту захвата")
                 waypoint_pick = self.PICK_POSITION
-                RobotController.robot.addMoveToPointJ(waypoint_pick)
+                RobotController.robot.addMoveToPointJ(waypoint_pick,0.05, 0.1)
                 if RobotController.robot.play():
-                    time.sleep(2) 
-                time.sleep(1)
+                    if RobotController.robot.manualJointMode():
+                        RobotController.robot.moveToInitialPose()
+                time.sleep(2) 
+
 
                 self.status_message.emit("Захват объекта")
-                if RobotController.robot.toolON():
-                    time.sleep(0.5)  
+                RobotController.robot.toolON()
                 time.sleep(1)
 
-                lift_position = self.PICK_POSITION.copy()
-                lift_position[2] += 0.1 
-                waypoint_lift = lift_position
-                RobotController.robot.addMoveToPointJ(waypoint_lift)
-                if RobotController.robot.play():
-                    time.sleep(1)
-                time.sleep(1)
 
                 if task.startswith("1"):
                         container_positions = self.CONTAINER_1_POSITIONS
@@ -90,7 +93,7 @@ class AutoThread(QThread):
                 else:  
                     self.status_message.emit("Перемещение в зону брака")
                     waypoint_reject = self.brack_POSITION
-                    RobotController.robot.addMoveToPointJ(waypoint_reject)
+                    RobotController.robot.addMoveToPointJ(waypoint_reject,0.05, 0.1)
                     if RobotController.robot.play():
                         time.sleep(2)
                     time.sleep(1)
@@ -110,20 +113,12 @@ class AutoThread(QThread):
                     position_index = AutoController.tara3
 
                 self.status_message.emit(f"Перемещение к таре {container_num} позиция {position_index + 1}")
-                waypoint_container = container_positions[position_index]
-                RobotController.robot.addMoveToPointJ(waypoint_container)
-                if RobotController.robot.play():
-                    time.sleep(2)
-                time.sleep(1)
-
                 
-                self.status_message.emit("Опускание объекта")
-                lower_position = container_positions[position_index].copy()
-                lower_position[2] -= 0.05
-                waypoint_lower = lower_position
-                RobotController.robot.addMoveToPointJ(waypoint_lower)
+                waypoint_container = self.CONTAINER_1_POSITIONS[position_index]
+                RobotController.robot.addMoveToPointJ(waypoint_container,0.05, 0.1)
                 if RobotController.robot.play():
-                    time.sleep(1)
+                    if RobotController.robot.manualJointMode():
+                        RobotController.robot.moveToInitialPose()
                 time.sleep(1)
                     
                 
@@ -132,11 +127,8 @@ class AutoThread(QThread):
                 time.sleep(0.5)
                     
                 self.status_message.emit("Возврат в исходную позицию")
-                waypoint_home = self.HOME_POSITION
-                RobotController.robot.addMoveToPointJ(waypoint_home)
-                if RobotController.robot.play():
-                    time.sleep(2)
-                time.sleep(2)
+                if RobotController.robot.manualJointMode():
+                    RobotController.robot.moveToInitialPose()
                 AutoController.All_tasks.pop(0)
 
                 
