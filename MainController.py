@@ -33,7 +33,7 @@ class VideoThread(QThread):
         self.device = 'cpu'
         self.detect = False
         self.objectsfilt = objects
-        print(self.objectsfilt)
+        
         
     def load_model(self):
         try:
@@ -210,8 +210,9 @@ class MainController(QMainWindow):
         else:
             self.objects.append(object)
 
-        if len(self.objects) == 0:
+        if len(self.objects) == 0 or len(self.objects) == 6:
             self.filt.setText("Показывать все")
+            self.objects.clear()
         else:
             self.filt.setText(str(self.objects))
 
@@ -329,8 +330,7 @@ class MainController(QMainWindow):
         ApplicationState.ApplicationState = AppStates.OFF
         self.ButtonDisable.setEnabled(False)
         self.ButtonEnable.setEnabled(True)
-        if RobotController.MoveToStart():
-            RobotController.robot.disengage()
+        RobotController.robot.disengage()
         LightController.update()
         LogController.Log(LogType.INFO, LogOption.On, "Выключен")
         self.outState.setText("Выключен")

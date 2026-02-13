@@ -30,6 +30,7 @@ class RobotController:
 
     @staticmethod
     def MoveToStart():
+        RobotController.robot.getRobotMode()
         if RobotController.robot.moveToInitialPose():
             if RobotMode.RobotMode == RobotModes.CART:
                     RobotController.robot.manualCartMode()
